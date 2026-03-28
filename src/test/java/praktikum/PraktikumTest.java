@@ -9,8 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PraktikumTest {
 
-    @Test
-    public void main_printsBurgerReceipt() {
+    private static String captureMainOutput() {
         PrintStream originalOut = System.out;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         System.setOut(new PrintStream(buffer));
@@ -19,10 +18,16 @@ public class PraktikumTest {
         } finally {
             System.setOut(originalOut);
         }
+        return buffer.toString();
+    }
 
-        String output = buffer.toString();
-        assertTrue(output.contains("(===="));
-        assertTrue(output.contains("Price:"));
+    @Test
+    public void mainPrintsBurgerTopLine() {
+        assertTrue(captureMainOutput().contains("(===="));
+    }
+
+    @Test
+    public void mainPrintsPriceLine() {
+        assertTrue(captureMainOutput().contains("Price:"));
     }
 }
-

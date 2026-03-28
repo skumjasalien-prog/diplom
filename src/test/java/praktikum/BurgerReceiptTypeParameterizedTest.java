@@ -1,5 +1,6 @@
 package praktikum;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -22,6 +23,10 @@ public class BurgerReceiptTypeParameterizedTest {
     @Parameterized.Parameter(1)
     public String expectedLowercase;
 
+    private Bun bun;
+    private Ingredient ingredient;
+    private Burger burger;
+
     @Parameterized.Parameters(name = "type={0} => \"{1}\"")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
@@ -30,30 +35,61 @@ public class BurgerReceiptTypeParameterizedTest {
         });
     }
 
-    @Test
-    public void getReceipt_includesIngredientLineWithLowercasedType_andUsesDependencies() {
-        Bun bun = mock(Bun.class);
+    @Before
+    public void setUp() {
+        bun = mock(Bun.class);
         when(bun.getName()).thenReturn("test bun");
         when(bun.getPrice()).thenReturn(100f);
 
-        Ingredient ingredient = mock(Ingredient.class);
+        ingredient = mock(Ingredient.class);
         when(ingredient.getType()).thenReturn(type);
         when(ingredient.getName()).thenReturn("test ingredient");
         when(ingredient.getPrice()).thenReturn(50f);
 
-        Burger burger = new Burger();
+        burger = new Burger();
         burger.setBuns(bun);
         burger.addIngredient(ingredient);
+    }
 
+    @Test
+    public void getReceiptIncludesIngredientLineWithLowercasedType() {
         String receipt = burger.getReceipt();
 
         assertTrue(receipt.contains(String.format("= %s %s =%n", expectedLowercase, "test ingredient")));
+    }
+
+    @Test
+    public void getReceiptCallsBunGetNameTwice() {
+        burger.getReceipt();
 
         verify(bun, times(2)).getName();
+    }
+
+    @Test
+    public void getReceiptCallsBunGetPriceOnce() {
+        burger.getReceipt();
+
         verify(bun, times(1)).getPrice();
+    }
+
+    @Test
+    public void getReceiptCallsIngredientGetTypeOnce() {
+        burger.getReceipt();
+
         verify(ingredient, times(1)).getType();
+    }
+
+    @Test
+    public void getReceiptCallsIngredientGetNameOnce() {
+        burger.getReceipt();
+
         verify(ingredient, times(1)).getName();
+    }
+
+    @Test
+    public void getReceiptCallsIngredientGetPriceOnce() {
+        burger.getReceipt();
+
         verify(ingredient, times(1)).getPrice();
     }
 }
-

@@ -4,12 +4,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class BurgerPriceParameterizedTest {
@@ -34,22 +34,19 @@ public class BurgerPriceParameterizedTest {
     }
 
     @Test
-    public void getPrice_calculatesBunDoublePlusIngredientsSum() {
+    public void getPriceCalculatesBunDoublePlusIngredientsSum() {
+        Bun bun = mock(Bun.class);
+        when(bun.getPrice()).thenReturn(bunPrice);
+
         Burger burger = new Burger();
-        burger.setBuns(new Bun("any bun", bunPrice));
-        for (Ingredient ingredient : buildIngredients(ingredientPrices)) {
+        burger.setBuns(bun);
+
+        for (float ingredientPrice : ingredientPrices) {
+            Ingredient ingredient = mock(Ingredient.class);
+            when(ingredient.getPrice()).thenReturn(ingredientPrice);
             burger.addIngredient(ingredient);
         }
 
         assertEquals(expected, burger.getPrice(), 0.0001f);
     }
-
-    private static List<Ingredient> buildIngredients(float[] prices) {
-        List<Ingredient> ingredients = new ArrayList<>();
-        for (int i = 0; i < prices.length; i++) {
-            ingredients.add(new Ingredient(IngredientType.SAUCE, "ingredient-" + i, prices[i]));
-        }
-        return ingredients;
-    }
 }
-
